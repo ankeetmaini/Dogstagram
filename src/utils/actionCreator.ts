@@ -100,7 +100,7 @@ export type GetActionTypes<T> = EnumerateValues<
       ? Q
       : T[P] extends (args: any) => any
       ? ReturnType<T[P]>
-      : never
+      : never;
   }
 >;
 

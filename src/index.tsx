@@ -13,18 +13,30 @@ import {SafeAreaView, StyleSheet, View, Text} from 'react-native';
 import {Provider} from 'react-redux';
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
+import {createDrawerNavigator} from 'react-navigation-drawer';
 
 import store from './store';
 
 import BreedsComponent from './components/BreedsComponent';
 import DogComponent from './components/DogComponent';
+import About from './components/About';
 
-const AppNavigator = createStackNavigator(
+const StackNavigator = createStackNavigator(
   {
     Home: {
       screen: BreedsComponent,
     },
     Dog: DogComponent,
+  },
+  {
+    initialRouteName: 'Home',
+  },
+);
+
+const AppNavigator = createDrawerNavigator(
+  {
+    Home: StackNavigator,
+    About: About,
   },
   {
     initialRouteName: 'Home',

@@ -23,7 +23,11 @@ export default function Breeds(
         asyncStatus: 'SUCCESS',
         data: Object.keys(action.payload.res.message),
       };
-
+    case 'GET_BREEDS_ERROR':
+      return {
+        ...state,
+        asyncStatus: 'ERROR',
+      };
     default:
       return state;
   }

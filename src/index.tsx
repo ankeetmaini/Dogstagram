@@ -9,33 +9,52 @@
  */
 
 import React from 'react';
-import {Text, SafeAreaView, StyleSheet, View} from 'react-native';
+import {SafeAreaView, StyleSheet, View, Text} from 'react-native';
 import {Provider} from 'react-redux';
+import {createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
+import {createDrawerNavigator} from 'react-navigation-drawer';
+
 import store from './store';
 
 import BreedsComponent from './components/BreedsComponent';
+import DogComponent from './components/DogComponent';
+import About from './components/About';
+
+const StackNavigator = createStackNavigator(
+  {
+    Home: {
+      screen: BreedsComponent,
+    },
+    Dog: DogComponent,
+  },
+  {
+    initialRouteName: 'Home',
+  },
+);
+
+const AppNavigator = createDrawerNavigator(
+  {
+    Home: StackNavigator,
+    About: About,
+  },
+  {
+    initialRouteName: 'Home',
+  },
+);
+
+const AppContainer = createAppContainer(AppNavigator);
+
 const App = () => {
   return (
     <Provider store={store}>
       <SafeAreaView>
         <View style={{height: '100%'}}>
-          <View style={[styles.container]}>
-            <Text>Hello</Text>
-          </View>
-          <BreedsComponent />
+          <AppContainer />
         </View>
       </SafeAreaView>
     </Provider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default App;

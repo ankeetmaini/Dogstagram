@@ -1,5 +1,10 @@
 import React, {FunctionComponent, useEffect} from 'react';
-import {FlatList, ActivityIndicator, Text} from 'react-native';
+import {
+  FlatList,
+  ActivityIndicator,
+  Text,
+  TouchableHighlight,
+} from 'react-native';
 import {AppState} from '../reducers';
 import AppActions from '../actions/Actions';
 import {
@@ -8,6 +13,7 @@ import {
   isError,
 } from '../utils/actionCreator';
 import {connect} from 'react-redux';
+import {NavigationStackProp} from 'react-navigation-stack';
 
 const {getBreeds} = AppActions;
 
@@ -21,9 +27,13 @@ const mapDispatchToProps = {
 
 type StateProps = ReturnType<typeof mapStateToProps>;
 type DispatchProps = GetConnectDispatchPropsType<typeof mapDispatchToProps>;
-type Props = StateProps & DispatchProps;
+type Props = StateProps & DispatchProps & {navigation: NavigationStackProp};
 
-const BreedsComponent: FunctionComponent<Props> = ({breeds, getBreeds}) => {
+const BreedsComponent: FunctionComponent<Props> = ({
+  breeds,
+  getBreeds,
+  navigation,
+}) => {
   useEffect(() => {
     getBreeds({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -32,7 +42,16 @@ const BreedsComponent: FunctionComponent<Props> = ({breeds, getBreeds}) => {
   if (isLoading(breeds)) return <ActivityIndicator />;
   if (isError(breeds)) return <Text>Sorry, couldn't fetch breeds</Text>;
   return (
-    <FlatList data={breeds.data} renderItem={b => <Text>{b.item}</Text>} />
+    <FlatList
+      data={breeds.data}
+      keyExtractor={d => d}
+      renderItem={b => (
+        <TouchableHighlight
+          onPress={() => navigation.navigate('Dog', {breed: b.item})}>
+          <Text>{b.item}</Text>
+        </TouchableHighlight>
+      )}
+    />
   );
 };
 

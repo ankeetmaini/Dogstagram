@@ -15,7 +15,7 @@ import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createDrawerNavigator} from 'react-navigation-drawer';
 
-import store from '../store';
+import makeStore from '../store';
 
 import BreedsComponent from './BreedsComponent';
 import DogComponent from './DogComponent';
@@ -47,7 +47,7 @@ const AppContainer = createAppContainer(AppNavigator);
 
 const App = () => {
   return (
-    <Provider store={store}>
+    <Provider store={makeStore()}>
       <View style={{height: '100%'}}>
         <AppContainer />
       </View>

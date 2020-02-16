@@ -2,13 +2,10 @@ import React, {useEffect} from 'react';
 import {ActivityIndicator, Text, View, Image, Button} from 'react-native';
 import {AppState} from '../reducers';
 import AppActions from '../actions/Actions';
-import {
-  GetConnectDispatchPropsType,
-  isLoading,
-  isError,
-} from '../utils/actionCreator';
-import {connect} from 'react-redux';
+import {isLoading, isError, isInit} from '../utils/actionCreator';
+import {connect, ConnectedProps} from 'react-redux';
 import {NavigationStackProp} from 'react-navigation-stack';
+import {NextPage} from 'next';
 
 const mapStateToProps = (state: AppState) => ({
   dog: state.dog,
@@ -18,21 +15,19 @@ const mapDispatchToProps = {
   getDog: AppActions.getDog,
 };
 
-type StateProps = ReturnType<typeof mapStateToProps>;
-type DispatchProps = GetConnectDispatchPropsType<typeof mapDispatchToProps>;
+type Props = ConnectedProps<typeof ConnectedToRedux>;
 type Nav = {
   navigation: NavigationStackProp<{
     breed: string;
   }>;
 };
-type Props = StateProps & DispatchProps & Nav;
 
-const DogComponent: React.FC<Props> = ({navigation, dog, getDog}) => {
+const DogComponent: NextPage<Props & Nav> = ({navigation, dog, getDog}) => {
   const renderDog = () => {
     getDog(navigation.getParam('breed'));
   };
   useEffect(() => {
-    renderDog();
+    isInit(dog) && renderDog();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -54,6 +49,11 @@ DogComponent.navigationOptions = ({navigation}: Nav) => {
   };
 };
 
-const Connected = connect(mapStateToProps, mapDispatchToProps)(DogComponent);
+// @ts-ignore
+DogComponent.getInitialProps = ({store}) => {
+  return store.dispatch(AppActions.getDog('labrador'));
+};
 
-export default Connected;
+const ConnectedToRedux = connect(mapStateToProps, mapDispatchToProps);
+
+export default ConnectedToRedux(DogComponent);

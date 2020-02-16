@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {
   FlatList,
   ActivityIndicator,
@@ -7,13 +7,10 @@ import {
 } from 'react-native';
 import {AppState} from '../reducers';
 import AppActions from '../actions/Actions';
-import {
-  GetConnectDispatchPropsType,
-  isLoading,
-  isError,
-} from '../utils/actionCreator';
-import {connect} from 'react-redux';
+import {isLoading, isError, isInit} from '../utils/actionCreator';
+import {connect, ConnectedProps} from 'react-redux';
 import {NavigationStackProp} from 'react-navigation-stack';
+import {NextPage} from 'next';
 
 const {getBreeds} = AppActions;
 
@@ -25,17 +22,16 @@ const mapDispatchToProps = {
   getBreeds,
 };
 
-type StateProps = ReturnType<typeof mapStateToProps>;
-type DispatchProps = GetConnectDispatchPropsType<typeof mapDispatchToProps>;
-type Props = StateProps & DispatchProps & {navigation: NavigationStackProp};
-
-const BreedsComponent: FunctionComponent<Props> = ({
+type FinalProps = ConnectedProps<typeof ConnectedToRedux> & {
+  navigation: NavigationStackProp;
+};
+const BreedsComponent: NextPage<FinalProps> = ({
   breeds,
   getBreeds,
   navigation,
 }) => {
   useEffect(() => {
-    getBreeds({});
+    isInit(breeds) && getBreeds({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -55,6 +51,10 @@ const BreedsComponent: FunctionComponent<Props> = ({
   );
 };
 
-const Connected = connect(mapStateToProps, mapDispatchToProps)(BreedsComponent);
+// @ts-ignore
+BreedsComponent.getInitialProps = ({store}) => {
+  return store.dispatch(getBreeds({}));
+};
+const ConnectedToRedux = connect(mapStateToProps, mapDispatchToProps);
 
-export default Connected;
+export default ConnectedToRedux(BreedsComponent);
